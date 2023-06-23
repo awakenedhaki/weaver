@@ -24,3 +24,10 @@ generate_graph <- function(tbl, n = NULL, prop = NULL) {
     max_slicer(order_by = index) |>
     igraph::graph_from_data_frame(directed = FALSE)
 }
+
+bridge_remover <- function(graph) {
+  pruned <- igraph::delete_edges(graph, igraph::bridges(graph))
+  pruned <- igraph::delete.vertices(pruned, which(igraph::degree(pruned) == 0))
+
+  return(pruned)
+}
