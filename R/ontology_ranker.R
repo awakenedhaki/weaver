@@ -69,7 +69,7 @@ calculate_node_ranks <- function(tbl, subgraph_id) {
 #' @import tibble
 #'
 #' @export
-rank_nodes <- function(graph, min_vertices = 2) {
+rank_subgraph_nodes <- function(graph, min_vertices = 2) {
   subgraphs <- igraph::decompose(graph, min.vertices = min_vertices)
 
   ranked_nodes <- tibble::tibble()
