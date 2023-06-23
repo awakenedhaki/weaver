@@ -39,7 +39,6 @@ generate_pairs <- function(tbl, ontology, gene_set) {
     dplyr::mutate(ontology = purrr::map(gene_set, names))
 }
 
-
 #' Calculate Jaccard Index for Pairs
 #'
 #' Calculates the Jaccard index for pairs of gene sets based on the provided ontology and gene set.
