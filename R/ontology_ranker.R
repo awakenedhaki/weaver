@@ -30,6 +30,7 @@ generate_graph <- function(tbl, n = NULL, prop = NULL) {
 #' Calculates the ranks of nodes based on the provided table.
 #'
 #' @param tbl Data table containing the node information.
+#' @param subgraph_id Indetifier for a given subgraph.
 #'
 #' @return A tibble with the calculated ranks for each node.
 #'
@@ -37,7 +38,7 @@ generate_graph <- function(tbl, n = NULL, prop = NULL) {
 #' @import tidyr
 #'
 #' @export
-calculate_node_ranks <- function(tbl) {
+calculate_node_ranks <- function(tbl, subgraph_id) {
   tbl <- tbl |>
     dplyr::select(-from, -to) |>
     tidyr::pivot_longer(cols = c(from_name, to_name),
