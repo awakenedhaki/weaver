@@ -62,5 +62,6 @@ calculate_jaccard_index <- function(tbl, ontology, gene_set) {
   pairs |>
     dplyr::mutate(index = purrr::map(gene_set, ~jaccard_index(.x[[1]], .x[[2]]))) |>
     tidyr::unnest(cols = index) |>
-    tidyr::unnest_wider(col = ontology, names_sep = "_")
+    tidyr::unnest_wider(col = ontology, names_sep = "_") |>
+    dplyr::select(ontology_1, ontology_2, index)
 }
