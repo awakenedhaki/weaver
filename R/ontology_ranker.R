@@ -48,16 +48,15 @@ calculate_node_ranks <- function(tbl, subgraph_id) {
 
   ranked <- tbl |>
     dplyr::mutate(total_index = sum(index), .by = ontology) |>
-    dplyr::distinct(ontology, n_edges, total_index) |>
-    dplyr::mutate(subgraph = i,
-                  total_n_edges = total_n_edges,
-                  rank = total_index * (total_n_edges / n_edges)) |>
-    dplyr::arrange(rank)
+    dplyr::distinct(ontology, n_edges, total_index, total_n_edges) |>
+    dplyr::mutate(subgraph = subgraph_id,
+                  rank = (total_index * (n_edges / total_n_edges))) |>
+    dplyr::arrange(dplyr::desc(rank))
 
   return(ranked)
 }
 
-#' Rank Nodes
+#' Rank Subgraph Nodes
 #'
 #' Ranks the nodes in a graph based on subgraphs and minimum number of vertices.
 #'
@@ -78,8 +77,9 @@ rank_nodes <- function(graph, min_vertices = 2) {
     subgraph <- subgraphs[[i]]
     total_n_edges <- igraph::ecount(subgraph)
 
-    tbl <- igraph::as_long_data_frame(subgraph)
-    ranked <- calculate_node_ranks(tbl)
+    tbl <- igraph::as_long_data_frame(subgraph) |>
+      dplyr::mutate(total_n_edges = total_n_edges) |>
+    ranked <- calculate_node_ranks(tbl, subgraph_id = i)
 
     ranked_nodes <- rbind(ranked_nodes, ranked)
   }
