@@ -25,21 +25,11 @@ generate_graph <- function(tbl, n = NULL, prop = NULL) {
     igraph::graph_from_data_frame(directed = FALSE)
 }
 
-#' Calculate Node Ranks
-#'
-#' Calculates the ranks of nodes based on the provided table.
-#'
-#' @param tbl Data table containing the node information.
-#' @param subgraph_id Indetifier for a given subgraph.
-#'
-#' @return A tibble with the calculated ranks for each node.
-#'
-#' @import dplyr
-#' @import tidyr
-#'
-#' @export
-calculate_node_ranks <- function(tbl, subgraph_id) {
-  tbl <- tbl |>
+normalized_jaccard_ranker <- function(subgraph) {
+  total_n_edges <- igraph::ecount(subgraph)
+
+  tbl <- subgraph |>
+    igraph::as_long_data_frame() |>
     dplyr::select(-from, -to) |>
     tidyr::pivot_longer(cols = c(from_name, to_name),
                         values_to = "ontology") |>
@@ -48,76 +38,34 @@ calculate_node_ranks <- function(tbl, subgraph_id) {
 
   ranked <- tbl |>
     dplyr::mutate(total_index = sum(index), .by = ontology) |>
-    dplyr::distinct(ontology, n_edges, total_index, total_n_edges) |>
-    dplyr::mutate(subgraph = subgraph_id,
-                  rank = (total_index * (n_edges / total_n_edges))) |>
-    dplyr::arrange(dplyr::desc(rank))
+    dplyr::distinct(ontology, n_edges, total_index) |>
+    dplyr::mutate(jaccard_rank = (total_index * (n_edges / total_n_edges))) |>
+    dplyr::select(ontology, jaccard_rank) |>
+    dplyr::arrange(dplyr::desc(jaccard_rank))
 
   return(ranked)
 }
 
-#' Rank Subgraph Nodes
-#'
-#' Ranks the nodes in a graph based on subgraphs and minimum number of vertices.
-#'
-#' @param graph Graph object to rank the nodes.
-#' @param min_vertices Minimum number of vertices required for a subgraph.
-#'
-#' @return A tibble with the ranked nodes.
-#'
-#' @import igraph
-#' @import tibble
-#'
-#' @export
-rank_subgraph_nodes <- function(graph, min_vertices = 3) {
-  subgraphs <- igraph::decompose(graph, min.vertices = min_vertices)
-
-  ranked_nodes <- tibble::tibble()
-  for (i in 1:length(subgraphs)) {
-    subgraph <- subgraphs[[i]]
-    total_n_edges <- igraph::ecount(subgraph)
-
-    tbl <- igraph::as_long_data_frame(subgraph) |>
-      dplyr::mutate(total_n_edges = total_n_edges)
-    ranked <- calculate_node_ranks(tbl, subgraph_id = i)
-
-    ranked_nodes <- rbind(ranked_nodes, ranked)
-  }
-
-  ranked_nodes <- ranked_nodes |>
-    dplyr::select(ontology, rank, subgraph)
-
-  return(ranked_nodes)
+scaled_eigenvector_ranker <- function(graph) {
+  igraph::evcent(graph, directed = FALSE, scale = TRUE)$vector |>
+    tibble::enframe(name = "ontology", value = "eigen_rank") |>
+    dplyr::arrange(dplyr::desc(eigen_rank))
 }
 
-calculate_subgraph_eigenvector_centralities <- function(graph, min_vertices = 3) {
-  subgraphs <- graph |>
-    igraph::decompose(min.vertices = 3)
-
-  ranked_nodes <- tibble::tibble()
-  for (i in 1:length(subgraphs)) {
-    ranked <- igraph::evcent(subgraphs[[i]])$vector |>
-      tibble::enframe(name = "ontology", value = "eigen_rank") |>
-      dplyr::mutate(subgraph = i) |>
-      dplyr::arrange(dplyr::desc(eigen_rank))
-
-    ranked_nodes <- rbind(ranked_nodes, ranked)
-  }
-
-  return(ranked_nodes)
+normalized_degree_ranker <- function(graph) {
+  igraph::degree(graph, mode = "total", normalize = TRUE) |>
+    tibble::enframe(name = "ontology", value = "degree") |>
+    dplyr::arrange(dplyr::desc(degree))
 }
 
-calculate_subgraph_node_degrees <- function(graph, min_vertices = 3) {
+calculate_subgraph_node_rank <- function(graph, ranker, min_vertices = 3) {
   subgraphs <- graph |>
-    igraph::decompose(min.vertices = 3)
+    igraph::decompose(min.vertices = min_vertices)
 
   ranked_nodes <- tibble::tibble()
   for (i in 1:length(subgraphs)) {
-    ranked <- igraph::degree(subgraphs[[i]], normalize = TRUE, mode = "total") |>
-      tibble::enframe(name = "ontology", value = "degree") |>
-      dplyr::mutate(subgraph = i) |>
-      dplyr::arrange(dplyr::desc(degree))
-
+    ranked <- ranker(subgraphs[[i]]) |>
+      dplyr::mutate(subgraph = i)
     ranked_nodes <- rbind(ranked_nodes, ranked)
   }
 
