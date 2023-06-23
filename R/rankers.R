@@ -36,9 +36,11 @@ calculate_subgraph_node_rank <- function(graph, ranker, min_vertices = 3, remove
     igraph::decompose(min.vertices = min_vertices)
 
   if (remove_bridges) {
-    subgraphs <- igraph::graph.union(subgraphs) |>
-      bridge_remove() |>
-      igraph::decompose(min_vertices = 3)
+    subgraphs <- lapply(subgraphs, igraph::as_data_frame) |>
+      dplyr::bind_rows() |>
+      igraph::graph_from_data_frame(directed = FALSE) |>
+      bridge_remover() |>
+      igraph::decompose()
   }
 
   ranked_nodes <- tibble::tibble()
