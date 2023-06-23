@@ -78,11 +78,14 @@ rank_subgraph_nodes <- function(graph, min_vertices = 3) {
     total_n_edges <- igraph::ecount(subgraph)
 
     tbl <- igraph::as_long_data_frame(subgraph) |>
-      dplyr::mutate(total_n_edges = total_n_edges) |>
+      dplyr::mutate(total_n_edges = total_n_edges)
     ranked <- calculate_node_ranks(tbl, subgraph_id = i)
 
     ranked_nodes <- rbind(ranked_nodes, ranked)
   }
+
+  ranked_nodes <- ranked_nodes |>
+    dplyr::select(ontology, rank, subgraph)
 
   return(ranked_nodes)
 }
