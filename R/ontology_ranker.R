@@ -89,3 +89,22 @@ rank_subgraph_nodes <- function(graph, min_vertices = 3) {
 
   return(ranked_nodes)
 }
+
+
+calculate_subgraph_eigenvector_centralities <- function(graph, min_vertices = 3) {
+  subgraphs <- graph |>
+    igraph::decompose(min.vertices = 3)
+
+  ranked_nodes <- tibble::tibble()
+  for (i in 1:length(subgraphs)) {
+    ranked <- igraph::evcent(subgraphs[[i]])$vector |>
+      tibble::enframe(name = "ontology", value = "eigen_rank") |>
+      dplyr::mutate(subgraph = i) |>
+      dplyr::arrange(dplyr::desc(eigen_rank))
+
+    ranked_nodes <- rbind(ranked_nodes, ranked)
+  }
+
+  return(ranked_nodes)
+}
+
