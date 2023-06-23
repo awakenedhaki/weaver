@@ -31,7 +31,7 @@ normalized_degree_ranker <- function(graph) {
     dplyr::arrange(dplyr::desc(degree))
 }
 
-calculate_subgraph_node_rank <- function(graph, ranker, min_vertices = 3, remove_bridges = FALSE) {
+rank_subgraph_nodes <- function(graph, ranker, min_vertices = 3, remove_bridges = FALSE) {
   subgraphs <- graph |>
     igraph::decompose(min.vertices = min_vertices)
 
