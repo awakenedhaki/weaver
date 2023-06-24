@@ -13,10 +13,10 @@
 #' @import igraph
 #'
 #' @export
-generate_graph <- function(tbl, n = NULL, prop = NULL) {
+generate_graph <- function(tbl, n = NULL, prop = 1) {
   if (!is.null(n)) {
     max_slicer <- purrr::partial(dplyr::slice_max, n = n)
-  } else if (!is.null(prop)) {
+  } else {
     max_slicer <- purrr::partial(dplyr::slice_max, prop = prop)
   }
 
