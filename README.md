@@ -1,6 +1,6 @@
 # Welcome to `weaver`!
 
-The aim of weaver is to provide powerful gene set enrichment analysis (GSEA) exploration tools.
+The aim of `weaver` is to provide powerful gene set enrichment analysis (GSEA) exploration tools.
 
 ## Introduction
 
