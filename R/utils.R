@@ -25,6 +25,22 @@ generate_graph <- function(tbl, n = NULL, prop = NULL) {
     igraph::graph_from_data_frame(directed = FALSE)
 }
 
+#' Remove Bridges and Isolated Vertices from a Graph
+#'
+#' This function removes bridges (edges whose removal would increase the number
+#' of connected components) and isolated vertices (vertices with no incident edges)
+#' from a graph.
+#'
+#' @param graph The input graph.
+#'
+#' @return The pruned graph without bridges and isolated vertices.
+#'
+#' @importFrom igraph delete_edges
+#' @importFrom igraph bridges
+#' @importFrom igraph delete.vertices
+#' @importFrom igraph degree
+#'
+#' @export
 bridge_remover <- function(graph) {
   pruned <- igraph::delete_edges(graph, igraph::bridges(graph))
   pruned <- igraph::delete.vertices(pruned, which(igraph::degree(pruned) == 0))
