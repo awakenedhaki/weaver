@@ -8,7 +8,7 @@ The aim of `weaver` is to provide gene set enrichment analysis (GSEA) exploratio
 
 ## Key Features
 
-- Multidimensional scaling of Jaccard index matrix to capture similarities between gene ontologies.
+- Multidimensional scaling using the Jaccard index matrix to capture similarities between gene ontologies.
 - Construction of an informative graph representation using the `igraph` package.
 - Ranking of gene ontologies using three different metrics: total similarity score, eigencentrality, and normalized degree.
 - Identification of the most informative gene ontology based on the highest rank within a subgraph.
