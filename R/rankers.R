@@ -110,9 +110,7 @@ rank_subgraph_nodes <- function(graph, ranker, min_vertices = 3, remove_bridges 
     igraph::decompose(min.vertices = min_vertices)
 
   if (remove_bridges) {
-    subgraphs <- lapply(subgraphs, igraph::as_data_frame) |>
-      dplyr::bind_rows() |>
-      igraph::graph_from_data_frame(directed = FALSE) |>
+    subgraphs <- bind_subgraphs(subgraphs) |>
       bridge_remover() |>
       igraph::decompose()
   }
