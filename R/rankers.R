@@ -17,8 +17,6 @@
 #'
 #' @export
 normalized_jaccard_ranker <- function(subgraph) {
-  total_n_edges <- igraph::ecount(subgraph)
-
   tbl <- subgraph |>
     igraph::as_long_data_frame() |>
     dplyr::select(-from, -to) |>
@@ -27,10 +25,12 @@ normalized_jaccard_ranker <- function(subgraph) {
     dplyr::select(-name) |>
     dplyr::add_count(ontology, name = "n_edges")
 
+  total_n_edges <- igraph::ecount(subgraph)
+  total_similarity <- sum(tbl$index)
   ranked <- tbl |>
     dplyr::mutate(total_index = sum(index), .by = ontology) |>
     dplyr::distinct(ontology, n_edges, total_index) |>
-    dplyr::mutate(jaccard_rank = (total_index * (n_edges / total_n_edges))) |>
+    dplyr::mutate(jaccard_rank = (total_index * n_edges) / (total_index * total_n_edges)) |>
     dplyr::select(ontology, jaccard_rank) |>
     dplyr::arrange(dplyr::desc(jaccard_rank))
 
