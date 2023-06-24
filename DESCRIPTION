@@ -1,11 +1,24 @@
 Package: weaver
 Type: Package
-Title: Gene Set Enrichment Network Visualization
+Title: Gene Set Enrichment Analysis Exploration
 Version: 0.1.0
 Authors@R: 
-    person("Rodrigo", "Vallejos", , , role = c("aut", "cre"))
-Description:
-License: use_mit_license()
+    person("Rodrigo", "Vallejos", , "email@example.com", role = c("aut", "cre"))
+Description: Summarizes gene set enrichment analysis results using Jaccard index
+    multidimensional scaling of gene ontology set analysis results.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 4.2.1)
+Imports: 
+  dplyr,
+  tidyr,
+  igraph,
+  tibble,
+  purrr,
+  ggplot2,
+  ggraph
+  
