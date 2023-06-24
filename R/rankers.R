@@ -80,8 +80,8 @@ scaled_eigenvector_ranker <- function(graph) {
 #' @export
 normalized_degree_ranker <- function(graph) {
   igraph::degree(graph, mode = "total", normalize = TRUE) |>
-    tibble::enframe(name = "ontology", value = "degree") |>
-    dplyr::arrange(dplyr::desc(degree))
+    tibble::enframe(name = "ontology", value = "degree_rank") |>
+    dplyr::arrange(dplyr::desc(degree_rank))
 }
 
 #' Rank Nodes in Subgraphs of a Graph
