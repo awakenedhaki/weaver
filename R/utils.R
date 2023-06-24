@@ -47,3 +47,25 @@ bridge_remover <- function(graph) {
 
   return(pruned)
 }
+
+#' Bind Subgraphs into a Single Graph
+#'
+#' This function takes a list of subgraphs and binds them together into a single graph.
+#' It performs the following steps:
+#' - Converts each subgraph into a data frame representation.
+#' - Binds the data frames together using `bind_rows()`.
+#' - Constructs a new graph from the combined data frame using `graph_from_data_frame()`.
+#'
+#' @param subgraphs A list of subgraphs.
+#'
+#' @return A single graph created by binding the subgraphs together.
+#'
+#' @import igraph
+#' @importFrom dplyr bind_rows
+#'
+#' @export
+bind_subgraphs <- function(subgraphs) {
+  lapply(subgraphs, igraph::as_data_frame) |>
+    dplyr::bind_rows() |>
+    igraph::graph_from_data_frame(directed = FALSE)
+}
